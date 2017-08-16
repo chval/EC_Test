@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use EC::Config::Text::YAML;
+use EC::Config::Text::JSON;
 
 # Factory for creating config object instances
 
@@ -25,6 +26,8 @@ sub get_instance {
 
     if ( $config_file =~ /\.yaml$/ ) {
         return EC::Config::Text::YAML->new($config_file);
+    } elsif ( $config_file =~ /\.json$/ ) {
+        return EC::Config::Text::JSON->new($config_file);
     }
 
     print STDERR "Config class for $config_file is not implemented\n";

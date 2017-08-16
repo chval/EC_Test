@@ -39,7 +39,9 @@ if ( $config_file ) {
         exit 1;
     }
 
-    my $env = $config->read();
+    if ( $config->read() ) {
+        $config->save("${config_file}.copy");
+    }
 }
 
 __DATA__

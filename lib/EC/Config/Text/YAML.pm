@@ -13,7 +13,7 @@ use EC::Env;
 with 'EC::Config::IStorable::Text';
 
 ##############################
-# Purpose     : get YAML config file
+# Purpose     : read and parse YAML config file
 # Access      : public
 # Parameters  : none
 # Returns     : EC::Env object or undef
@@ -37,20 +37,22 @@ sub read {
 ##############################
 # Purpose     : save environment to YAML config file
 # Access      : public
-# Parameters  : EC::Env object
+# Parameters  : config_file (not mandatory)
 # Returns     : true or false
 #
 sub save {
-    my ($self, $env) = @_;
+    my ($self, $config_file) = @_;
     
-    unless ( $env && ref $env eq 'EC::Env' ) {
+    $config_file ||= $self->config_file;
+    
+    unless ( $config_file ) {
         print STDERR "Invalid paramter for saving config\n";
         return;
     }
     
-    my $hash = $env->to_hash();
+    my $hash = $self->env->to_hash();
     
-    eval { YAML::DumpFile($self->config_file, $hash); };
+    eval { YAML::DumpFile($config_file, $hash); };
     
     if ( $@ ) {
         print STDERR "Failed to dump YAML file\n$@\n";
