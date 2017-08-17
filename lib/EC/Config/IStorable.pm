@@ -5,6 +5,9 @@ use warnings;
 
 use Moose::Role;
 use namespace::autoclean;
+use Try::Tiny;
+
+use EC::Env;
 
 # General interface for storable configuration
 # this methods must be implemented at inherited classes
@@ -30,10 +33,45 @@ around 'read' => sub {
     my $orig = shift;
     my $self = shift;
     
-    my $env = $self->$orig(@_);
+    # try to read from default source
+    my $data = $self->$orig() || {};
     
-    unless ( $self->error ) {
-        $self->_set_env($env);
+    if ( @_ && (! scalar @_ % 2) ) {
+        
+        # additional options must be set or overwrite present
+        my %opts = @_;
+        
+        if ( ref $data eq 'HASH' ) {
+            
+            foreach my $key ( keys %opts ) {
+                $data->{$key} = $opts{$key};
+            }
+        }
+    }
+    
+    if ( $data ) {
+        
+        try {
+            my $env = EC::Env->new($data);
+            $self->_set_env($env);
+            return $env;
+        } catch {
+            my $e = $_;
+            
+            if (
+                blessed $e
+                && $e->isa('Moose::Exception')
+            ) {
+                my $attr_name = $e->attribute_name;
+                my $value = $e->value;
+        
+                print STDERR "Value $value for '$attr_name' is invalid!\n";
+            } else {
+                print STDERR "$e\n";
+            }
+            
+            return undef;
+        }
     }
 };
 

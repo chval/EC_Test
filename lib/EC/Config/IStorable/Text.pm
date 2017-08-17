@@ -53,11 +53,9 @@ sub BUILD {
     if ( $self->config_file ) {
         
         unless ( -f $self->config_file ) {
-            print STDERR "No such file: " . $self->config_file . "\n";
+            #print STDERR "No such file: " . $self->config_file . "\n";
             $self->_set_error(1);
         }
-        
-        return;
     }
 }
 

@@ -4,52 +4,53 @@ use strict;
 use warnings;
 
 use Moose;
+use Moose::Util::TypeConstraints;
 use namespace::autoclean;
 
+# what kind of server is: Tomcat, Glassfish, etc
+has server => (
+    is      => 'rw',
+    isa     => 'Str',
+);
+
+# hostname: localhost, 127.0.0.1, etc
 has hostname => (
     is      => 'rw',
     isa     => 'Str',
 );
 
+# server port on which deployed application should work
+has port => (
+    is      => 'rw',
+    isa     => 'Int',
+);
+
+# credentials login
 has login => (
     is      => 'rw',
-    isa     => 'Str',
+    isa     => 'Maybe[Str]',
 );
 
+# credentials password
 has password => (
     is      => 'rw',
-    isa     => 'Str',
+    isa     => 'Maybe[Str]',
 );
 
-##############################
-# Purpose     : allows pass to constructor any hash reference
-# Access      : class method
-# Parameters  : hash of params or a reference
-# Returns     : hash of params
-# Comments    : method is called as a class method before an object is created
-#
-around BUILDARGS => sub {
-    my ($orig, $class) = (shift, shift);
-    
-    if ( @_ == 1 && ref $_[0] eq 'HASH' ) {
-        
-        # looks like hash with variables
-        my %opts = ();
-        
-        foreach my $attr ( keys %{$_[0]} ) {
-            
-            if ( $class->can($attr) ) {
-                $opts{$attr} = $_[0]{$attr};
-            } else {
-                print STDERR "Env has no such attribute: $attr\n";
-            }
-        }
-        
-        return $class->$orig(%opts);
-    }
-    
-    return $class->$orig();
-};
+# path to .war file to deploy
+has archive => (
+    is      => 'rw',
+    isa     => 'Maybe[Str]',
+);
+
+# available actions
+enum WebAppActions => ['deploy', 'undeploy', 'start', 'stop', 'check'];
+
+# action what to do
+has action => (
+    is      => 'rw',
+    isa     => 'WebAppActions',
+);
 
 ##############################
 # Purpose     : convert object into hash ref
@@ -63,7 +64,10 @@ sub to_hash {
     my $hash = {};
     
     foreach my $attr ( $self->meta->get_all_attributes() ) {
-        $hash->{$attr->name} = $self->{$attr->name};
+        
+        if ( defined $self->{$attr->name} ) {
+            $hash->{$attr->name} = $self->{$attr->name};
+        }
     }
     
     return $hash;

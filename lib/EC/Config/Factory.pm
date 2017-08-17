@@ -5,6 +5,7 @@ use warnings;
 
 use EC::Config::Text::YAML;
 use EC::Config::Text::JSON;
+use EC::Config::CmdLine;
 
 # Factory for creating config object instances
 
@@ -17,21 +18,38 @@ use EC::Config::Text::JSON;
 # Comments    : this is a class method
 #
 sub get_instance {
-    my ($self, $config_file) = @_;
+    my $self = shift;
     
-    unless ( $config_file ) {
-        print STDERR "config_file is a mandatory parameter\n";
-        return;
+    # instance can be received from config file or from options hash
+    my $config_file;
+    my %opts = ();
+    
+    unless ( @_ ) {
+        return undef;
     }
-
-    if ( $config_file =~ /\.yaml$/ ) {
-        return EC::Config::Text::YAML->new($config_file);
-    } elsif ( $config_file =~ /\.json$/ ) {
-        return EC::Config::Text::JSON->new($config_file);
+    
+    unless ( scalar @_ % 2 ) {
+        
+        # even number of params
+        %opts = @_;
+    } else {
+        $config_file = shift;
     }
-
-    print STDERR "Config class for $config_file is not implemented\n";
-    return;
+    
+    if ( $config_file ) {
+        
+        # select between different config file types
+        if ( $config_file =~ /\.yaml$/ ) {
+            return EC::Config::Text::YAML->new($config_file);
+        } elsif ( $config_file =~ /\.json$/ ) {
+            return EC::Config::Text::JSON->new($config_file);
+        }
+        
+        print STDERR "Config class for $config_file is not implemented\n";
+        return undef;
+    }
+    
+    return EC::Config::CmdLine->new(%opts);
 }
 
 1;

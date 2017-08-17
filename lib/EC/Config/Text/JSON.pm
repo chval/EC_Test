@@ -8,8 +8,6 @@ use namespace::autoclean;
 use JSON;
 use File::Slurp;
 
-use EC::Env;
-
 # Class that works with text configs in a JSON format
 with 'EC::Config::IStorable::Text';
 
@@ -28,7 +26,7 @@ sub read {
         unless ( $text ) {
             print STDERR "Failed to read JSON file\n";
             $self->_set_error(1);
-            return;
+            return undef;
         }
         
         my $json = JSON->new->allow_nonref;
@@ -37,11 +35,14 @@ sub read {
         if ( $@ ) {
             print STDERR "Failed to decode JSON text\n$@\n";
             $self->_set_error(1);
-            return;
+            return undef;
         }
         
-        return EC::Env->new($data);
+        # handled in a base class
+        return $data;
     }
+    
+    return undef;
 }
 
 ##############################
@@ -57,7 +58,7 @@ sub save {
     
     unless ( $config_file ) {
         print STDERR "Invalid paramter for saving config\n";
-        return;
+        return undef;
     }
     
     my $hash = $self->env->to_hash();
