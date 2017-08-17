@@ -1,2 +1,6 @@
 FROM tomcat:8.0
-MAINTAINER Vadym Nechval <blackchval@gmail.com>
+LABEL maintainer="Vadym Nechval <blackchval@gmail.com>"
+
+COPY cfg/tomcat-users.xml /usr/local/tomcat/conf/
+
+CMD ["catalina.sh", "run"]

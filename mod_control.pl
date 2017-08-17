@@ -5,7 +5,6 @@ use warnings;
 
 use Getopt::Long;
 
-use EC::Env;
 use EC::Config::Factory;
 
 # tool options
