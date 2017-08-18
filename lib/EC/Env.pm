@@ -11,36 +11,39 @@ use namespace::autoclean;
 has server => (
     is      => 'rw',
     isa     => 'Str',
+    default => 'tomcat'
 );
 
 # hostname: localhost, 127.0.0.1, etc
 has hostname => (
-    is      => 'rw',
-    isa     => 'Str',
+    is          => 'rw',
+    isa         => 'Str',
+    default     => 'localhost',
 );
 
 # server port on which deployed application should work
 has port => (
-    is      => 'rw',
-    isa     => 'Int',
+    is          => 'rw',
+    isa         => 'Int',
+    default     => 8080,
 );
 
 # credentials login
 has login => (
     is      => 'rw',
-    isa     => 'Maybe[Str]',
+    isa     => 'Str',
 );
 
 # credentials password
 has password => (
     is      => 'rw',
-    isa     => 'Maybe[Str]',
+    isa     => 'Str',
 );
 
 # path to .war file to deploy
 has archive => (
-    is      => 'rw',
-    isa     => 'Maybe[Str]',
+    is          => 'rw',
+    isa         => 'Str',
 );
 
 # available actions
@@ -48,8 +51,16 @@ enum WebAppActions => ['deploy', 'undeploy', 'start', 'stop', 'check'];
 
 # action what to do
 has action => (
-    is      => 'rw',
-    isa     => 'WebAppActions',
+    is          => 'rw',
+    isa         => 'WebAppActions',
+    default     => 'check'
+);
+
+# web path of a deployed application
+has webpath => (
+    is          => 'rw',
+    isa         => 'Str',
+    default     => '/sample'
 );
 
 ##############################

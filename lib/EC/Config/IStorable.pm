@@ -63,9 +63,8 @@ around 'read' => sub {
                 && $e->isa('Moose::Exception')
             ) {
                 my $attr_name = $e->attribute_name;
-                my $value = $e->value;
         
-                print STDERR "Value $value for '$attr_name' is invalid!\n";
+                print STDERR "Invalid attribute '$attr_name' value!\n";
             } else {
                 print STDERR "$e\n";
             }

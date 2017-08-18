@@ -1,5 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <tomcat-users>
     <role rolename="tomcat"/>
-    <user username="tommy" password="thecat" roles="tomcat"/>
+    <role rolename="manager-script"/>
+    <user username="tommy" password="thecat" roles="tomcat,manager-script"/>
 </tomcat-users>

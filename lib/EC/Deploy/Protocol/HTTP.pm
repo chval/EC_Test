@@ -40,6 +40,10 @@ sub _create_request {
     print "$method => $url\n";
     my $req = HTTP::Request->new($method => $url);
     
+    if ( $opts{login} ) {
+        $req->authorization_basic($opts{login}, $opts{password});
+    }
+    
     if ( $opts{data} ) {
         my $data = $opts{data};
         my $content;
@@ -55,8 +59,25 @@ sub _create_request {
         
         print "SEND: $content\n";
         $req->content($content);
+    } elsif ( $opts{file} ) {
+        my $file = $opts{file};
+        
+        if ( -f $file && open(my $fh, '<', $file) ) {
+            (my $filename = $file) =~ s/^.*\///;
+            print "SEND: filename='$filename'\n";
+            $req->header('Content-Disposition' => "form-data; name='war'; filename='$filename'");
+            $req->header('Content-Type' => 'application/octet-stream');
+            
+            while ( <$fh> ) {
+                $req->add_content($_);
+            }
+            
+            close $fh;
+        } else {
+            print STDERR "File $file doesn't exist or cant be read\n";
+        }
     } else {
-        print "Data is not set\n";
+        #print "No data in request\n";
     }
         
     return $req;

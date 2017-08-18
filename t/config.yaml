@@ -1,0 +1,4 @@
+---
+login: foo
+server: tomcat
+port: 8080

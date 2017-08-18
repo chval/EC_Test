@@ -1,0 +1,17 @@
+version: '2'
+
+services:
+  tomcat8:
+    build:
+      context: .
+      dockerfile: Dockerfile.tomcat
+    image: tomcat:test
+  ectest:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ectest:vnechval
+    ports:
+      - "8888:8080"
+    depends_on:
+      - tomcat8
